@@ -1,0 +1,6 @@
+{
+  "name": "Allied Prep",
+  "description": "UG & PG Allied Health Sciences Question Paper, Mock Test & Study Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
