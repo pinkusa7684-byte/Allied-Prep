@@ -4,7 +4,6 @@ import {
   BookOpen,
   HelpCircle,
   ArrowRight,
-  TrendingUp,
   Award,
   CheckCircle2,
   Clock,
@@ -16,7 +15,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { CourseId, Level, UserProgressState, CourseInfo, SubjectTopic } from '../types';
-import { CircularProgress } from './common/CircularProgress';
+import { HomeNoticeBannerCarousel } from './home/HomeNoticeBannerCarousel';
 
 interface HomeScreenProps {
   selectedLevel: Level;
@@ -66,11 +65,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     };
     return { ...rt, fullTopic };
   });
-
-  const accuracyRate =
-    progress.questionsAttempted > 0
-      ? Math.round((progress.correctAnswers / progress.questionsAttempted) * 100)
-      : 78;
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
@@ -188,6 +182,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
       </section>
+
+      {/* 3 Interactive Auto-Sliding Information & Notice Banners */}
+      <HomeNoticeBannerCarousel
+        onNavigateToMCQ={onNavigateToMCQ}
+        onNavigateToQuestionBank={onNavigateToQuestionBank}
+        onNavigateToBooks={onNavigateToBooks}
+      />
 
       {/* 3 Main Feature Cards */}
       <section className="space-y-3">
@@ -327,63 +328,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </button>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Performance Summary */}
-      <section className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-900" />
-            <h3 className="text-base font-bold text-slate-900 font-heading">Performance Summary</h3>
-          </div>
-          <span className="text-xs text-slate-500">Overall academic metrics</span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* Card 1: Questions Attempted */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col items-center text-center">
-            <span className="text-2xl font-bold font-heading text-slate-900">
-              {progress.questionsAttempted}
-            </span>
-            <span className="text-xs font-semibold text-slate-600 mt-1">Questions Attempted</span>
-            <div className="mt-2 w-full flex justify-center">
-              <CircularProgress percentage={Math.min(100, Math.round((progress.questionsAttempted / 200) * 100))} size={48} strokeWidth={4} color="#0F2552" showText={false} />
-            </div>
-          </div>
-
-          {/* Card 2: Correct Answers */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col items-center text-center">
-            <span className="text-2xl font-bold font-heading text-emerald-700">
-              {progress.correctAnswers}
-            </span>
-            <span className="text-xs font-semibold text-slate-600 mt-1">Correct Answers</span>
-            <div className="mt-2 w-full flex justify-center">
-              <CircularProgress percentage={accuracyRate} size={48} strokeWidth={4} color="#059669" showText={false} />
-            </div>
-          </div>
-
-          {/* Card 3: Accuracy % */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col items-center text-center">
-            <span className="text-2xl font-bold font-heading text-blue-800">
-              {accuracyRate}%
-            </span>
-            <span className="text-xs font-semibold text-slate-600 mt-1">Accuracy Rate</span>
-            <div className="mt-2 w-full flex justify-center">
-              <CircularProgress percentage={accuracyRate} size={48} strokeWidth={4} color="#1d4ed8" showText={false} />
-            </div>
-          </div>
-
-          {/* Card 4: Tests Completed */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col items-center text-center">
-            <span className="text-2xl font-bold font-heading text-amber-700">
-              {progress.testsCompleted}
-            </span>
-            <span className="text-xs font-semibold text-slate-600 mt-1">Tests Completed</span>
-            <div className="mt-2 w-full flex justify-center">
-              <CircularProgress percentage={Math.min(100, progress.testsCompleted * 15)} size={48} strokeWidth={4} color="#d97706" showText={false} />
-            </div>
-          </div>
         </div>
       </section>
     </div>

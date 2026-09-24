@@ -49,7 +49,6 @@ import { BooksSection } from './components/books/BooksSection';
 import { BookReaderModal } from './components/books/BookReaderModal';
 import { ProfileScreen } from './components/profile/ProfileScreen';
 import { GlobalSearchModal } from './components/search/GlobalSearchModal';
-import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthModal } from './components/auth/AuthModal';
 
 export default function App() {
@@ -61,7 +60,6 @@ export default function App() {
   // Candidate Authentication State
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => loadCurrentUser());
   const [registeredUsers, setRegisteredUsers] = useState<AuthUser[]>(() => loadRegisteredUsers());
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
   // Stored Data State
@@ -83,7 +81,6 @@ export default function App() {
     topicId?: string;
   }>({ count: 25, scope: 'semester' });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   // Quick viewer states for search shortcuts & bookmarks
   const [quickViewingPaper, setQuickViewingPaper] = useState<QuestionPaper | null>(null);
@@ -160,6 +157,13 @@ export default function App() {
       const filtered = prev.filter((u) => u.mobileNumber !== newUser.mobileNumber);
       return [newUser, ...filtered];
     });
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    saveCurrentUser(null);
+    setActiveTab('home');
+    triggerNotification('Logged out from Candidate Account.');
   };
 
   // Handler for practicing MCQs
@@ -263,6 +267,28 @@ export default function App() {
 
   const totalBookmarksCount = bookmarks.questionIds.length + bookmarks.paperIds.length + bookmarks.bookIds.length;
 
+  // Mandatory Candidate Login / Signup Gate Screen: Candidate cannot enter home screen without logging in or signing up
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0B1E48] to-slate-950 flex flex-col justify-center items-center p-3 sm:p-6 font-sans">
+        {notificationToast && (
+          <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xl border border-slate-700 animate-fadeIn flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>{notificationToast}</span>
+          </div>
+        )}
+        <AuthModal
+          isOpen={true}
+          isGatedScreen={true}
+          initialMode={authModalMode}
+          onAuthSuccess={handleAuthSuccess}
+          registeredUsers={registeredUsers}
+          onRegisterUser={handleRegisterUser}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-blue-900 selection:text-white font-sans">
       {/* Top Notification Toast if triggered */}
@@ -279,15 +305,9 @@ export default function App() {
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenNotifications={() => triggerNotification('You have 2 new Mock Tests and updated 2026 Anatomy Question Papers!')}
         onOpenProfile={() => setActiveTab('profile')}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-        onOpenAuth={() => {
-          setAuthModalMode('login');
-          setIsAuthOpen(true);
-        }}
+        onLogout={handleLogout}
         unreadNotificationsCount={2}
         activeCourse={selectedCourse}
-        isAdminMode={isAdminOpen}
-        onToggleAdminMode={() => setIsAdminOpen((prev) => !prev)}
       />
 
       {/* Main Container */}
@@ -404,11 +424,7 @@ export default function App() {
               });
               setMockTests([]);
             }}
-            onOpenAdmin={() => setIsAdminOpen(true)}
-            onOpenAuth={() => {
-              setAuthModalMode('login');
-              setIsAuthOpen(true);
-            }}
+            onLogout={handleLogout}
             mockTestHistory={mockTests}
           />
         )}
@@ -456,24 +472,7 @@ export default function App() {
         />
       )}
 
-      {/* Admin Panel CMS Modal */}
-      {isAdminOpen && (
-        <AdminDashboard
-          courses={INITIAL_COURSES}
-          mcqs={mcqs}
-          papers={papers}
-          books={books}
-          onAddMCQ={(newQ) => setMcqs((prev) => [newQ, ...prev])}
-          onDeleteMCQ={(id) => setMcqs((prev) => prev.filter((q) => q.id !== id))}
-          onAddPaper={(newP) => setPapers((prev) => [newP, ...prev])}
-          onDeletePaper={(id) => setPapers((prev) => prev.filter((p) => p.id !== id))}
-          onAddBook={(newB) => setBooks((prev) => [newB, ...prev])}
-          onDeleteBook={(id) => setBooks((prev) => prev.filter((b) => b.id !== id))}
-          onClose={() => setIsAdminOpen(false)}
-        />
-      )}
-
-      {/* Quick Paper Viewer Modal (Search & Saved Shortcuts) */}
+      {/* Quick Paper Viewer Modal (Search Shortcuts) */}
       {quickViewingPaper && (
         <QuestionPaperViewer
           paper={quickViewingPaper}
@@ -484,7 +483,7 @@ export default function App() {
         />
       )}
 
-      {/* Quick Book Reader Modal (Search & Saved Shortcuts) */}
+      {/* Quick Book Reader Modal (Search Shortcuts) */}
       {quickReadingBook && (
         <BookReaderModal
           book={quickReadingBook}
@@ -494,18 +493,6 @@ export default function App() {
           onUpdatePage={(page) => handleUpdateReadingProgress(quickReadingBook.id, page)}
           isBookmarked={bookmarks.bookIds.includes(quickReadingBook.id)}
           onToggleBookmark={() => handleToggleBookmarkBook(quickReadingBook.id)}
-        />
-      )}
-
-      {/* Candidate Signup & Login Modal */}
-      {isAuthOpen && (
-        <AuthModal
-          isOpen={isAuthOpen}
-          initialMode={authModalMode}
-          onClose={() => setIsAuthOpen(false)}
-          onAuthSuccess={handleAuthSuccess}
-          registeredUsers={registeredUsers}
-          onRegisterUser={handleRegisterUser}
         />
       )}
     </div>

@@ -41,8 +41,7 @@ interface ProfileScreenProps {
   onOpenMCQ?: (question: MCQQuestion) => void;
   onOpenPaper?: (paper: QuestionPaper) => void;
   onOpenBook?: (book: BookMaterial) => void;
-  onOpenAdmin: () => void;
-  onOpenAuth?: () => void;
+  onLogout?: () => void;
   mockTestHistory: MockTestResultData[];
 }
 
@@ -51,8 +50,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   userProgress,
   onUpdateProfile,
   onResetProgress,
-  onOpenAdmin,
-  onOpenAuth,
+  onLogout,
   mockTestHistory,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'history'>('profile');
@@ -122,29 +120,23 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
 
           <div className="flex items-center gap-2 self-stretch sm:self-auto">
-            {onOpenAuth && (
-              <button
-                onClick={onOpenAuth}
-                className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
-                title="Switch Account or Candidate Login"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Candidate Login</span>
-              </button>
-            )}
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors"
             >
               {isEditing ? 'Cancel Edit' : 'Edit Profile'}
             </button>
-            <button
-              onClick={onOpenAdmin}
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
-              <span>Admin Panel</span>
-            </button>
+            {onLogout && (
+              <button
+                id="profile-logout-btn"
+                onClick={onLogout}
+                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                title="Log out of Candidate Portal"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                <span>Logout</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -327,16 +319,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </a>
 
-              {onOpenAuth && (
+              {onLogout && (
                 <button
-                  onClick={onOpenAuth}
-                  className="w-full p-3 rounded-xl border border-blue-200 bg-blue-50/60 hover:bg-blue-100 text-blue-900 text-xs font-bold flex items-center justify-between transition-colors"
+                  id="profile-bottom-logout-btn"
+                  onClick={onLogout}
+                  className="w-full p-3 rounded-xl border border-rose-200 bg-rose-50/60 hover:bg-rose-100 text-rose-800 text-xs font-bold flex items-center justify-between transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <LogOut className="w-4 h-4 text-blue-900" />
-                    <span>Candidate Login / Switch Account</span>
+                    <LogOut className="w-4 h-4 text-rose-700" />
+                    <span>Log Out from Candidate Account</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-blue-900" />
+                  <ChevronRight className="w-4 h-4 text-rose-600" />
                 </button>
               )}
             </div>

@@ -1290,7 +1290,7 @@ export const INITIAL_REGISTERED_USERS: AuthUser[] = [
 ];
 
 export function loadCurrentUser(): AuthUser | null {
-  return getStoredData<AuthUser | null>(STORAGE_KEYS.CURRENT_USER, INITIAL_REGISTERED_USERS[0]);
+  return getStoredData<AuthUser | null>(STORAGE_KEYS.CURRENT_USER, null);
 }
 
 export function saveCurrentUser(user: AuthUser | null): void {
